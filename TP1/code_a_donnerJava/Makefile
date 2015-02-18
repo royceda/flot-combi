@@ -5,10 +5,10 @@ cbuild: arc
 
 test: test-h1 test-h2
 
-test-h1:cbuild
+test-h1: cbuild
 	java -cp bin/ tsp.MainTSP -h1 ../data/instances/kroD100.tsp
 
-test-h2:cbuild
+test-h2: cbuild
 	java -cp bin/ tsp.MainTSP -h2 ../data/instances/kroD100.tsp
 
 arc:
