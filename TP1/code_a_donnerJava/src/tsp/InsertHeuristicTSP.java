@@ -15,11 +15,11 @@ public class InsertHeuristicTSP implements HeuristicTSP {
      */
     int minTab(double[] tab){
 
-	int    index = -1;
+	int    index = 0;
 	double min   = 100E9;
 	int    n     = tab.length;
 
-	for(int i = 0; i<n; ++i){
+	for(int i = 0; i < n; ++i){
 	    if(tab[i] < min){
 		min   = tab[i];
 		index = i;
