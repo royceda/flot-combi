@@ -19,7 +19,7 @@ public class InsertHeuristicTSP implements HeuristicTSP {
 	double min   = 100E9;
 	int    n     = tab.length;
 
-	for(int i = 0; i < n; ++i){
+	for(int i = 0; i<n; ++i){
 	    if(tab[i] < min){
 		min   = tab[i];
 		index = i;
@@ -48,43 +48,39 @@ public class InsertHeuristicTSP implements HeuristicTSP {
 	boolean[] witness = new boolean[n]; //le sommet n a ete parcouru?
 
 
-	for(int i = 0; i < n; ++i)
-	    witness[i] = true;
-
+	
 	solution.add(0);
 
 	//Optimisation: 2 thread
 	for(etat = 0; etat < n; ++etat){ //pour tous
+	    for(int i = 0; i < n; ++i)
+		witness[i] = true;
+	    
 	    witness[etat] = false;
 	    for(int i = 0; i < n; ++i){ //on itere au nombre de noeuds
+		min = matrix[i][0];
 		for(int j = 0; j < n; j++){ //recherche du plus proche
 		    if(matrix[etat][j] < min && etat != j && witness[j]){
 			min = matrix[etat][j];
 			k = j;
+			witness[k] = false;
 		    }
 		}
-		witness[k] = false;
 		value     += min;
-		min        = 100E9;
-		//index      = k;
 	    }
-	    for(int i = 0; i < n; ++i)
-		witness[i] = true;
-
 	    values[etat] = value;
-
 	}
-
 
 	for(int i = 0; i<n; ++i)
 	    System.out.println(i+" value: "+values[i]);
-
+	
 
 	/* reprendre le chemin qui marche le mieu*/
 	etat = minTab(values);
-
+	value = 0.0;
 	//etat = 2;
 	for(int i = 0; i < n; ++i){ //on itere au nombre de noeuds
+	    min = matrix[i][0];
 	    for(int j = 0; j < n; j++){ //recherche du plus proche
 		if(matrix[etat][j] < min && etat != j && !solution.contains(j)){
 		    min = matrix[etat][j];
@@ -94,7 +90,6 @@ public class InsertHeuristicTSP implements HeuristicTSP {
 	    
 	    solution.add(k);
 	    value += min;
-	    min    = 10000000;
 	    etat   = k;
 	}
 	
