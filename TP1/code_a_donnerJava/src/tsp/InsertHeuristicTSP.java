@@ -40,7 +40,7 @@ public class InsertHeuristicTSP implements HeuristicTSP {
 
 	double    value   = 0.0;
 	int       n       = matrix[0].length;		
-	double    min     = 100E9;
+	double    min     = matrix[0][0];
 	int       k       = -1;
 	int       etat    = 3;
 	int       index   = 0;
@@ -50,7 +50,7 @@ public class InsertHeuristicTSP implements HeuristicTSP {
 
 	
 	solution.add(0);
-
+	/*
 	//Optimisation: 2 thread
 	for(etat = 0; etat < n; ++etat){ //pour tous
 	    for(int i = 0; i < n; ++i)
@@ -66,7 +66,7 @@ public class InsertHeuristicTSP implements HeuristicTSP {
 			witness[k] = false;
 		    }
 		}
-		value     += min;
+		value += min;
 	    }
 	    values[etat] = value;
 	}
@@ -75,23 +75,52 @@ public class InsertHeuristicTSP implements HeuristicTSP {
 	    System.out.println(i+" value: "+values[i]);
 	
 
-	/* reprendre le chemin qui marche le mieu*/
-	etat = minTab(values);
-	value = 0.0;
-	//etat = 2;
-	for(int i = 0; i < n; ++i){ //on itere au nombre de noeuds
-	    min = matrix[i][0];
-	    for(int j = 0; j < n; j++){ //recherche du plus proche
-		if(matrix[etat][j] < min && etat != j && !solution.contains(j)){
-		    min = matrix[etat][j];
-		    k = j;
+	*/
+
+
+
+
+	for(etat = 0; etat<n; ++etat){
+	    value = 0.0;
+	    for(int i = 0; i < n; ++i){ //on itere au nombre de noeuds
+		min = matrix[i][0];
+		for(int j = 0; j < n; j++){ //recherche du plus proche
+		    if(matrix[etat][j] < min && etat != j && !solution.contains(j)){
+			min = matrix[etat][j];
+			k = j;
+			value += min;
+			solution.add(k);
+		    }
 		}
 	    }
-	    
-	    solution.add(k);
-	    value += min;
-	    etat   = k;
+	    values[etat] = value;
+	    System.out.println(etat+" value: "+value);
 	}
+	
+
+	
+
+
+	/* reprendre le chemin qui marche le mieu*/
+	//etat = minTab(values);
+	etat = 6;
+	value = 0.0;
+       	solution.clear();
+	solution.add(0);
+	
+	while(solution.size() < n)
+	    for(int i = 0; i < n; ++i){ //on itere au nombre de noeuds
+		min = matrix[i][0];
+		for(int j = 0; j < n; j++){ //recherche du plus proche
+		    if(matrix[etat][j] < min && etat != j && !solution.contains(j)){
+			min = matrix[etat][j];
+			k = j;
+			value += min;
+			solution.add(k);
+		    }
+		}
+		etat = k;
+	    }
 	
 	return value;
     }
