@@ -1,5 +1,6 @@
 package tsp;
 import java.util.List;
+import java.util.ListIterator;
 
 /**
  * 
@@ -14,9 +15,8 @@ public class InsertHeuristicTSP implements HeuristicTSP {
      *
      */
     int minTab(double[] tab){
-
 	int    index = 0;
-	double min   = 100E9;
+	double min   = tab[0];
 	int    n     = tab.length;
 
 	for(int i = 0; i<n; ++i){
@@ -57,19 +57,19 @@ public class InsertHeuristicTSP implements HeuristicTSP {
 	int       n       = matrix[0].length;		
 	int       etat    = sommet;
 
+	solution.add(sommet);
 	solution.clear();
-	solution.add(0);
 	for(int i = 0; i < n; ++i){
 	    tmp = plusProcheDispo(matrix[etat], solution);
 	    solution.add(etat);
 	    value += matrix[etat][tmp];
 	    etat = tmp;
-	    System.out.println(i+"   etape: "+etat);
+	    //System.out.println(i+"   etape: "+etat);
 	}
-	solution.add(0);
+	solution.add(sommet);
 	return value;
     }
-
+    
     /**
      *
      *
@@ -98,7 +98,14 @@ public class InsertHeuristicTSP implements HeuristicTSP {
      */
     public double computeSolution(double[][] matrix, List<Integer> solution) {
 	
-	return method2(matrix, solution);
 	
+	double value =  method2(matrix, solution);
+
+	int i = -1;
+	ListIterator it = solution.listIterator();
+	while(it.hasNext())
+	    System.out.println(++i+ " sommet:  "+ it.next());
+	
+	return value;
     }
 }
