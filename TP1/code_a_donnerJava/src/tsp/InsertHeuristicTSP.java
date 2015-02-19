@@ -25,11 +25,71 @@ public class InsertHeuristicTSP implements HeuristicTSP {
 		index = i;
 	    }
 	}
-	System.out.println("n = "+n+" \nindex: "+index);
+	//System.out.println("n = "+n+" \nindex: "+index);
 	return index;
     }
     
 
+
+    int plusProcheDispo(double[] tab, List<Integer> solution){
+      	int    index = 0;
+	double min   = tab[0];
+	int    n     = tab.length;
+	
+	for(int i = 1; i<n; ++i){
+	    if(tab[i] < min && !solution.contains(i)){
+		min   = tab[i];
+		index = i;
+	    }
+	}
+	//System.out.println("n = "+n+" \nindex: "+index);
+	return index;
+    }
+
+
+    /** 
+     *
+     *
+     */
+    public double method1(int sommet, double[][] matrix, List<Integer> solution){
+	double    value   = 0.0;
+	int       tmp     = 0;
+	int       n       = matrix[0].length;		
+	int       etat    = sommet;
+
+	solution.clear();
+	solution.add(0);
+	for(int i = 0; i < n; ++i){
+	    tmp = plusProcheDispo(matrix[etat], solution);
+	    solution.add(etat);
+	    value += matrix[etat][tmp];
+	    etat = tmp;
+	    System.out.println(i+"   etape: "+etat);
+	}
+	solution.add(0);
+	return value;
+    }
+
+    /**
+     *
+     *
+     */
+    public double method2(double[][] matrix, List<Integer> solution){
+	
+	int n = matrix[0].length;
+	double[] values = new double[n];
+	int min = 0;
+
+	solution.clear();
+
+	for(int i = 0; i<n; ++i)
+	    values[i] = method1(i, matrix, solution);
+	
+	
+	min = minTab(values);
+	return method1(min, matrix, solution);
+    }
+    
 
     /** TODO : coder cette méthode 
      *
@@ -37,91 +97,8 @@ public class InsertHeuristicTSP implements HeuristicTSP {
      *
      */
     public double computeSolution(double[][] matrix, List<Integer> solution) {
-
-	double    value   = 0.0;
-	int       n       = matrix[0].length;		
-	double    min     = matrix[0][0];
-	int       k       = -1;
-	int       etat    = 3;
-	int       index   = 0;
-	double[]  values  = new double[n];  // sauvegarde des valeurs de chemins
-	boolean[] witness = new boolean[n]; //le sommet n a ete parcouru?
-
-
 	
-	solution.add(0);
-	/*
-	//Optimisation: 2 thread
-	for(etat = 0; etat < n; ++etat){ //pour tous
-	    for(int i = 0; i < n; ++i)
-		witness[i] = true;
-	    
-	    witness[etat] = false;
-	    for(int i = 0; i < n; ++i){ //on itere au nombre de noeuds
-		min = matrix[i][0];
-		for(int j = 0; j < n; j++){ //recherche du plus proche
-		    if(matrix[etat][j] < min && etat != j && witness[j]){
-			min = matrix[etat][j];
-			k = j;
-			witness[k] = false;
-		    }
-		}
-		value += min;
-	    }
-	    values[etat] = value;
-	}
-
-	for(int i = 0; i<n; ++i)
-	    System.out.println(i+" value: "+values[i]);
+	return method2(matrix, solution);
 	
-
-	*/
-
-
-
-
-	for(etat = 0; etat<n; ++etat){
-	    value = 0.0;
-	    for(int i = 0; i < n; ++i){ //on itere au nombre de noeuds
-		min = matrix[i][0];
-		for(int j = 0; j < n; j++){ //recherche du plus proche
-		    if(matrix[etat][j] < min && etat != j && !solution.contains(j)){
-			min = matrix[etat][j];
-			k = j;
-			value += min;
-			solution.add(k);
-		    }
-		}
-	    }
-	    values[etat] = value;
-	    System.out.println(etat+" value: "+value);
-	}
-	
-
-	
-
-
-	/* reprendre le chemin qui marche le mieu*/
-	//etat = minTab(values);
-	etat = 6;
-	value = 0.0;
-       	solution.clear();
-	solution.add(0);
-	
-	while(solution.size() < n)
-	    for(int i = 0; i < n; ++i){ //on itere au nombre de noeuds
-		min = matrix[i][0];
-		for(int j = 0; j < n; j++){ //recherche du plus proche
-		    if(matrix[etat][j] < min && etat != j && !solution.contains(j)){
-			min = matrix[etat][j];
-			k = j;
-			value += min;
-			solution.add(k);
-		    }
-		}
-		etat = k;
-	    }
-	
-	return value;
     }
 }
