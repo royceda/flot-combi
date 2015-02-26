@@ -29,8 +29,7 @@ public class LowerBoundTSP{
 
     public double getMinColumn(double[][] matrix, int j){
 	double min = 10000;
-	int i =0;
-	for(; i<matrix[j].length; i++){
+	for(int i =0; i<matrix[j].length; i++){
 	    if (matrix[i][j] < min)
 		min = matrix[i][j];
 	}
@@ -50,9 +49,8 @@ public class LowerBoundTSP{
 	}
 	return sum;
     }
-
-
-
+    
+    
     public double lowerBoundValue(double[][] matrix){
     	double[][] mat2 = matrix;
 	double val = 0;
@@ -61,5 +59,4 @@ public class LowerBoundTSP{
 	val += subMinColumn(mat2, n);
 	return val;
     }
-
 }

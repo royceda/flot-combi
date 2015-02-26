@@ -9,7 +9,7 @@ public class NodeTSP implements Node<List<Integer>> {
 
     /** to create the first node ==> root note */
     public NodeTSP(double[][] matrix) {
-
+	
     }
 
     /** useful to create the children */

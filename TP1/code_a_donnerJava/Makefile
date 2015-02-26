@@ -2,6 +2,7 @@ all: cbuild
 
 cbuild: arc
 	javac -cp bin -sourcepath src -d bin src/tsp/MainTSP.java
+	javac -cp bin -sourcepath src -d bin src/tsp/LowerBoundTSP.java
 
 test: test-h1 test-h2
 
