@@ -3,7 +3,6 @@ import java.util.List;
 import java.util.ArrayList;
 
 public class MainTSP {
-
 	
 	private static char stringtoCode(String s){
 		if(s.equals("-h1") || s.equals("--heuristic1")) return 'h';

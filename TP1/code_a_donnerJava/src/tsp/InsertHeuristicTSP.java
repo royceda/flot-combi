@@ -30,7 +30,6 @@ public class InsertHeuristicTSP implements HeuristicTSP {
     }
     
 
-
     int plusProcheDispo(double[] tab, List<Integer> solution){
       	int    index = 0;
 	double min   = tab[0];
@@ -97,12 +96,12 @@ public class InsertHeuristicTSP implements HeuristicTSP {
      *
      */
     public double computeSolution(double[][] matrix, List<Integer> solution) {
+		
+	int          i     = -1;
+	double       value = method2(matrix, solution);
+	ListIterator it    = solution.listIterator();
 	
-	
-	double value =  method2(matrix, solution);
-
-	int i = -1;
-	ListIterator it = solution.listIterator();
+	System.out.println("les etapes du parcours optimale");
 	while(it.hasNext())
 	    System.out.println(++i+ " sommet:  "+ it.next());
 	
