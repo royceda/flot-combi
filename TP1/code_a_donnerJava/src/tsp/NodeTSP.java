@@ -10,14 +10,25 @@ public class NodeTSP implements Node<List<Integer>> {
     /** to create the first node ==> root note */
     public NodeTSP(double[][] matrix) {
 	/*TODO*/
+	Node<List<Integer>> list= new Node<List<Integer>>;
+	int n = matrix[0].size();
+	for(int i=0; i< n; i++){
+	    for(int j; j< n; j++){
+		if(i != j){
+		    list.add(new NodeTSP(this, i, j, true));
+		    list.add(new NodeTSP(this, j, i, true));
+		}
+	    }		
+	}
 	
     }
 
     /** useful to create the children */
     private NodeTSP(NodeTSP father, int u, int v, boolean selected) {
-	/* tODO */
-	
-
+	Node<List<Integer>> mylist = new List<Integer>;
+	mylist.add(new NodeTSP(this, u+1, v, true));
+	mylist.add(new NodeTSP(this, u+1, v, false));
+	return mylist;
 
     }
 
