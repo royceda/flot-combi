@@ -1,3 +1,4 @@
+
 all: cbuild
 
 cbuild: arc
@@ -8,8 +9,8 @@ test: test-h1 test-h2
 
 test-h1: cbuild
 	java -cp bin/ tsp.MainTSP -h1 ../data/instances/kroD100.tsp
-	echo -o "test Berlin"
-	java -cp bin/ tsp.MainTSP -h2 ../data/instances/berlin52.tsp
+	test Berlin
+	java -cp bin/ tsp.MainTSP -h1 ../data/instances/berlin52.tsp
 
 
 test-h2: cbuild
