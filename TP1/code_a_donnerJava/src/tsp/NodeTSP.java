@@ -24,7 +24,7 @@ public class NodeTSP implements Node<List<Integer>> {
     
     public static double infinity = 1E308;
     public static double reflb    = infinity;
- 
+    public static int    size     = 0;
 
     /** to create the first node ==> root note */
     public NodeTSP(double[][] matrix) {
@@ -35,7 +35,7 @@ public class NodeTSP implements Node<List<Integer>> {
 	mc = matrix;
 	value = 0;
 
-	int n = matrix.length;
+	size = matrix.length;
 
 	//LB
 	double[][]    tmp = matrix;
@@ -43,15 +43,11 @@ public class NodeTSP implements Node<List<Integer>> {
 	lb = lbt.lowerBoundValue(tmp);
 
 	
-	//if (isLeaf())
-	//  if(lb<reflb){
-	reflb = lb;
-	//value = lb;
-	//  }
 
-	//else if (isFeasible()){//amelioration possible
-	allowed  = new boolean[n][n];
-	reg      = new double[n][n];
+	reflb = lb;
+
+	allowed  = new boolean[size][size];
+	reg      = new double[size][size];
 	    	    
 	/*Some init*/
 	for(int i = 0; i < mc.length; i++){
@@ -77,43 +73,44 @@ public class NodeTSP implements Node<List<Integer>> {
 	    mc[u][v] = infinity;
 	    allowed[u][v] = false;
 
-	    if(isLeaf()){
-		if(lb<reflb)
-		    reflb = lb;
-	    }
-	    
-	    else if(isFeasible() && !isLeaf()) {
+	    if(isLeaf() && lb < reflb)
+		reflb = lb;
+	    else if(isFeasible() && !isLeaf()) 
 		traitment();
-	    }
-	    else{//fin
-		
-
+	    else{
+		/*end*/
 	    }
 	}
 	else{
 	    /* selected*/
 
 	    lb = father.getLB();
+
+	    /*copy*/
 	    for(int i= 0; i< mc.length; i++){
 		for(int j=0; j< mc.length; j++){
-		    if(i!= u && j!= v)
+		    //if(i!= u && j!= v)
 			mc[i][j] = father.mc[i][j];
-		    else{
+			/*else{
 			allowed[i][j] = false;
 			mc[i][j] = infinity;
-		    }
+			}*/
 		}
+	    }
+
+	    /*interdiction*/
+	    for(int i= 0; i< mc.length; i++){
+		allowed[u][i] = false;
+		allowed[i][v] = false;
 	    }
 
 	    LowerBoundTSP lbt = new LowerBoundTSP();
 	    lb += lbt.lowerBoundValue(mc);
-	    if(isLeaf()){
-		if(lb<reflb)
-		    reflb = lb;
-	    }
-	    else {
-		traitment();   
-	    }
+	    
+	    if(isLeaf() && lb< reflb)
+		reflb = lb;
+
+	    traitment();   
 	}
     }
     
@@ -165,15 +162,10 @@ public class NodeTSP implements Node<List<Integer>> {
 	return min;
     }
 
-    /**
-     * 
-     *
-     */
     public double getLB() {
 	return lb;
     }
-    
-	
+    	
     public double getValue() {
 	return value;
     }
@@ -192,35 +184,35 @@ public class NodeTSP implements Node<List<Integer>> {
     }
 
     public boolean isLeaf() {
-	for(int i=0; i<mc.length; i++){
-	    for(int j=0; j<mc.length; j++){
-		if(mc[i][j]>0 && isAllowed(i,j) )
+	System.out.println("isleaf");
+	for(int i=0; i<size; i++){
+	    for(int j=0; j<size; j++){
+		if( allowed[i][j] == true )
+		    System.out.println("test is: "+allowed[i][j]);
 		    return false;
 	    }
 	}
+	System.out.println("test is: true");
 	return true;
     }
 
     public boolean hasNextChild() {
-	/*	if( child1 == null && child2 == null)
-		return true;
-		else
-		return false;*/
-	return false;
+	if( child1 == null && child2 == null)
+	    return true;
+	else
+	    return false;	
     }
 
     public Node<List<Integer>> getNextChild() {
 	//Node<List<Integer>> child = null;
-	/*	if(hasNextChild()){
-		if(child1 != null)
+	if(hasNextChild()){
+	    if(child1 != null)
 		return child1;
-		else
+	    else
 		return child2;
-		}
-		else
-		return null;*/
-
-	return null;
+	}
+	else
+	    return null;
     }
 
 
@@ -280,8 +272,9 @@ public class NodeTSP implements Node<List<Integer>> {
 	}
 	    
 	/*fils*/
-	child1 = new NodeTSP(this, maxi, maxj, true);
-	child2 = new NodeTSP(this, maxi, maxj, false);
-
+	if(this.isLeaf() == false){
+	    child1 = new NodeTSP(this, maxi, maxj, true);
+	    child2 = new NodeTSP(this, maxi, maxj, false);
+	}
     }
 }
