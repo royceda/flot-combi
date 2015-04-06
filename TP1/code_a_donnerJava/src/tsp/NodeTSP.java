@@ -14,7 +14,7 @@ public class NodeTSP implements Node<List<Integer>> {
     Node child2;
     double[][] mc;
 
-    double infinity = 100000000E08;
+public static double infinity = 0;
 
 
     /**
@@ -32,7 +32,7 @@ public class NodeTSP implements Node<List<Integer>> {
     /** to create the first node ==> root note */
     public NodeTSP(double[][] matrix) {
 	/*TODO*/
-	
+	infinity = matrix[1][1];
 	System.out.println("   on construit un noeud Racine");
 
 	int n = matrix.length;
@@ -41,18 +41,37 @@ public class NodeTSP implements Node<List<Integer>> {
 	arcs = new ArrayList<>();
 	interdit = new boolean[n][n];
 	
-	/*traitement de la mtrice*/
-	for(int i = 0; i < mc.length; ++i){
-	    for(int j = 0; j < mc.length; ++j)
+	for(int i = 0; i < mc.length; i++)
+	    for(int j = 0; j < mc.length; j++)
+		interdit[i][j] = false;
+
+
+
+	/*traitement de la matrice*/
+	for(int i = 0; i < mc.length; i++){
+	    double minim = minTabLine(i);
+	    for(int j = 0; j < mc.length; j++){
 		if( i!=j)
-		    mc[i][j] -= minTab(i);
+		    mc[i][j] -= minim;
+	    }
 	}
 
-	for( int i = 0; i < mc.length; ++i)
-	    for( int j = 0; j < mc.length; ++j)
-		if(i != j){		    
-		    child1 = new NodeTSP(this, 1, 2, true);
-		    child2 = new NodeTSP(this, 1, 2, false);
+
+	for(int i = 0; i < mc.length; i++){
+	    double minim2 = minTabRow(i);
+	    for(int j = 0; j < mc.length; j++){
+		if( i!=j)
+		    mc[j][i] -= minim2;
+	    }
+	}
+
+
+
+	for( int i = 0; i < mc.length; i++)
+	    for( int j = 0; j < mc.length; j++)
+		if(i != j && mc[i][j] == 0){		    
+		    child1 = new NodeTSP(this, i, j, true);
+		    child2 = new NodeTSP(this, i, j, false);
 		    }	
     }
 
@@ -63,7 +82,7 @@ public class NodeTSP implements Node<List<Integer>> {
     /** useful to create the children */
     private NodeTSP(NodeTSP father, int u, int v, boolean selected) {
 	//System.out.println("on construit un noeud fils");
-
+	
 	arcs = father.arcs;
 	mc = father.mc;
 	if (selected){
@@ -74,10 +93,11 @@ public class NodeTSP implements Node<List<Integer>> {
 	    
 	    for( int i = 0; i < mc.length; ++i)
 		for( int j = 0; j < mc.length; ++j)
-		    if(i != j && !interdit[i][j]){
+		    if(i != j && !interdit[i][j] && i != u && j != v){
 			//modif mc
 			mc[i][v] = infinity;
 			mc[u][j] = infinity;
+			//test de circuit < n ?
 			
 			child1 = new NodeTSP(this, i, j, true);
 			child2 = new NodeTSP(this, i, j, false);
@@ -86,7 +106,7 @@ public class NodeTSP implements Node<List<Integer>> {
 	else {
 	    int j;
 	}
-       
+	    
 
 	
 
@@ -111,7 +131,7 @@ public class NodeTSP implements Node<List<Integer>> {
     /**Simple recherche de minimum dans un tableau de double
      *
      */
-    double minTab(int j){
+    double minTabLine(int j){
 	double[] tab = mc[j];
 	int    index = 0;
 	double min   = tab[0];
@@ -127,16 +147,37 @@ public class NodeTSP implements Node<List<Integer>> {
 	return min;
     }
 
+
+
+    /**Simple recherche de minimum dans un tableau de double
+     *
+     */
+    double minTabRow(int j){
+	
+	
+	double[] tab = mc[j];
+
+	int    index = 0;
+	double min   = mc[0][j];
+	int    n     = tab.length;
+	
+	for(int i = 0; i<n; ++i){
+	    if(tab[i] < min){
+		min   = mc[i][j];
+		index = i;
+	    }
+	}
+	//System.out.println("n = "+n+" \nindex: "+index);
+	return min;
+    }
+
     /**
      * Pour chaque ligne on prend le minimum et on addition (1ere etape)
      *
      */
     public double getLB() {
-	double lb = 0;
-	for(int i = 0; i < mc.length; ++i){
-	    lb += minTab(i);
-	} 
-	return lb;
+	LowerBoundTSP lb = new LowerBoundTSP();
+	return lb.lowerBoundValue(mc);
     }
     
 	
