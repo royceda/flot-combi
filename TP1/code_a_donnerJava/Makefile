@@ -25,9 +25,10 @@ test-l1: cbuild
 	java -cp bin/ tsp.MainTSP -l1 ../data/instances/berlin52.tsp
 
 test-e: cbuild
-	java -cp bin/ tsp.MainTSP -e ../data/instances/kroD100.tsp 13
+	java -cp bin/ tsp.MainTSP -e ../data/toy_instances/toy07.tsp 1
+	java -cp bin/ tsp.MainTSP -e ../data/instances/kroD100.tsp 100
 	test Berlin
-	java -cp bin/ tsp.MainTSP -e ../data/instances/berlin52.tsp 5
+	java -cp bin/ tsp.MainTSP -e ../data/instances/berlin52.tsp 100
 	
 doc: 
 	pdflatex rapport/rapport.tex
