@@ -1,0 +1,79 @@
+\documentclass[a4paper,11pt]{article}
+
+\usepackage[frenchb]{babel}
+\usepackage[utf8]{inputenc}
+%\usepackage{verbatim}
+\usepackage{graphicx}
+
+\begin{document}
+\title{Compte Rendu du TP1 de Flots et Combinatoire}
+\date{Pour le 6 Avril 2015}
+\maketitle
+
+\begin{center}
+  Reda Boudjeltia \\
+  Victor Dury\\
+\end{center}
+\maketitle
+\section{Heuristiques}
+\subsection{Construction itérative par ajout du plus proche}
+\indent Dans cette première approche, le travail proposé fut d'implémenter une heuristique qui selectionne à chaque itération (i.e chaque fois qu'un sommet est selectionné) de prendre son voisin le plus proche. Néanmoins, du fait que la solution donnée soit un cycle sur un graphe, le sujet proposa d'implémenter une amélioration qui executera la fonction de base pour tous les sommets du graphe et de comparer les solutions pour en extraire la meilleure. \\
+Pour cela nous avons procédé de la façon suivante:
+\begin{enumerate}
+\item Implémentation de l'heuristique de base (\function{method1} dans notre code)
+\begin{itemize}
+\item Nous partons d'un sommet 
+\item Nous prennons le plus proche grace à la méthode \function{PlusProcheDispo} et nous l'ajoutons à la liste solution et nous ajoutons la valeur de l'arrete à value.
+\item et nous continuons jusqu'à avoir fait le tour
+\end{itemize}
+\item Implémentation de l'amélioration
+\begin{itemize}
+\item Nous bouclons sur chaque noeud où la valeur de chaque chemins est sauvegarder dans un tableau
+\item A chaque itération nous appellons \function{method1}
+\item puis nous recherchons le minimum dans le tableau des sauvegardes
+\end{itemize}
+\end{enumerate} 
+
+De plus, il nous a semblé intéréssant de connaitre le chemins exact dans cette implémentation, c'est pourquoi que dans \function{method1} nous stockons les sommets parcouru dans une liste. Ainsi, dans \function{method2} nous fesons un tableau de listes qui contient pour chaque itération (donc chaque sommet de départ) le chemin.
+
+
+\subsection{Consruction par ajout d'arcs}
+\indent Pour cette heuristique, nous avons tout d'abord implémenté une nouvelle classe Arc.
+Cette possède comme attributs: le noeud de départ de l'arc, le noeud d'arrivée de l'arc, le poids de l'arc. Nous y avons aussi introduit la méthode compareTo(Arc arc), et nous lié cette classe comme héritière de la classe Comparable<Arc>. Ceci a été fait dans le but de trier rapidement une liste d'Arcs.
+\\
+Ainsi, dans notre méthode computeSolution, nous introduisons tous les arcs de notre graphe dans une liste d'Arcs, que nous trions ensuite.
+\\
+Puis nous prenons le premier arc de cette liste (celui dont le poids était le plus faible), et nous plaçons son sommet de départ et son sommet de sortie dans notre liste solution. Puis, nous itérons sur tous les autres arcs du graphe de manière croissante. Tant que l'arc ne créé pas de sous-tour (c'est à dire que ses sommets de départ et d'arrivée ne sont pas notre liste solution), nous ajoutons son noeud d'arrivée à la solution, jusqu'à obtenir n noeuds.
+
+
+\subsection{Comparaison des résultats}
+\indent Pour le fichier de graphe "data/instances/kroD100.tsp" nous obtenons, avec l'heuristique 1 (Construction par ajout du plus proche), un plus court chemin d'environ 23738, alors qu'avec l'heuristique 2, nous obtenons environ 20820. \\
+\indent Pour le fichier de graphe "date/instances/berlin52.tsp" nous obtenons, avec l'heuristique 1, une valeur d'environ 7398, alors qu'avec l'heuristique sur la construction par ajout d'arcs, nous obtenons environ 6427. \\
+\indent Faire make test-h1 pour l'heuristique h1, make test-h2 pour l'heuristique h2, dans notre dossier code\_a\_donnerJava. Changer le Makefile pour les essayer avec d'autres graphes.
+
+\section{Borne Inférieure}
+\subsection{Implémentation}
+\indent Pour borner toute solution du problème TSP nous avons:
+\begin{itemize}
+\item Cherché le minimum par ligne pour chaque ligne de la matrice.
+\item Soustrait pour chaque ligne le minimum trouvé précédemment.
+\item Cherché le minimum par colonne pour chaque colonne.
+\item Soustrait pour chaque colonne le minimul trouvé précédemment.
+\item Ajouté le minimum de chaque ligne et le minimum de chaque colonne.
+\item Ainsi récupéré la borne inférieure.
+\end{itemize}
+\subsection{Complexité}
+\indent Nous trouvons une complexité quadradique en temps pour cet algorithme en fonction du nombre de noeuds. En effet, pour chaque minimum trouvé, nous reparcourons une ligne de la matrice.
+\section{Méthode exacte}
+\subsection{Versio basique de la recherche arborescente}
+Dans le cas où on selectionne l'arc (i,j), il faudra interdire automatiquement les arc (j,i) mais aussi tout les arcs arrivant sur les sommets i et j, et les autres arcs sortant de i. D'autre part, le cout minimum augmente lorsqu'on ajoute un arc. 
+Ensuite, dans le but de s'assurer que l'arc (i, j) ne sera plus choisit, nous pouvons créer une matrice de booléen et mettre la variable M[i][j] à \texttt{false}.
+
+
+
+
+
+
+
+\subsection{Arcs interdits}
+\end{document}
