@@ -60,67 +60,7 @@ public class NodeTSP implements Node<List<Integer>> {
 		reg[i][j] = 0;
 	    }
 	}
-	    
-	/*traitement de la matrice courante en ligne*/
-	for(int i = 0; i < mc.length; i++){
-	    double minim = minTabLine(i);
-	    value += minim;
-	    for(int j = 0; j < mc.length; j++){
-		if( i!=j)
-		    mc[i][j] -= minim;
-	    }		
-	}
-	    
-	/*traitement de la matrice courante en colonne*/
-	for(int i = 0; i < mc.length; i++){
-	    double minim2 = minTabRow(i);
-	    value += minim2;
-	    for(int j = 0; j < mc.length; j++){
-		if( i!=j)
-		    mc[j][i] -= minim2;
-	    }
-	}
-
-	/*Traitement des regrets 1/2 */
-	for(int i = 0; i < mc.length; i++){
-	    double minim = minTabLine(i);
-	    for(int j = 0; j < mc.length; j++){
-		if(mc[i][j] == 0)
-		    reg[i][j] = minim;
-	    }
-	}
-
-	/*Traitement des regrets 2/2 */
-	for(int i = 0; i < mc.length; i++){
-	    double minim2 = minTabRow(i);
-	    for(int j = 0; j < mc.length; j++){
-		if(mc[j][i] == 0)
-		    reg[j][i] += minim2;
-	    }
-	}
-
-	/*Selection*/
-	int    maxi   = 0;
-	int    maxj   = 0;
-	double maxreg = 0.0;
-
-	for(int i=0; i< mc.length; i++){
-	    for(int j=0; j< mc.length; j++){
-		if(reg[i][j] > maxreg && isAllowed(i,j)) {
-		    maxreg = reg[i][j];
-		    maxi = i;
-		    maxj = j;
-		}
-	    }
-	}
-	    
-	/*fils*/
-	child1 = new NodeTSP(this, maxi, maxj, true);
-	child2 = new NodeTSP(this, maxi, maxj, false);
-	//	}
-	//	else{
-	//	    child  = null;
-	//	}
+	traitment();
     }
 
     /** useful to create the children */
@@ -128,9 +68,11 @@ public class NodeTSP implements Node<List<Integer>> {
 	System.out.println("     on construit un noeud fils");
 	allowed = father.allowed;
 	mc = father.mc;
+	reg = father.reg;
 
 	
-	if(!selected){
+	if(!selected){ 
+
 	    lb = father.getLB() + father.reg[u][v];
 	    mc[u][v] = infinity;
 	    allowed[u][v] = false;
@@ -141,7 +83,7 @@ public class NodeTSP implements Node<List<Integer>> {
 	    }
 	    
 	    else if(isFeasible() && !isLeaf()) {
-		//	child1 = new NodeTSP(mc);
+		traitment();
 	    }
 	    else{//fin
 		
@@ -149,17 +91,20 @@ public class NodeTSP implements Node<List<Integer>> {
 	    }
 	}
 	else{
-	    lb = father.getLB();
+	    /* selected*/
 
+	    lb = father.getLB();
 	    for(int i= 0; i< mc.length; i++){
 		for(int j=0; j< mc.length; j++){
 		    if(i!= u && j!= v)
 			mc[i][j] = father.mc[i][j];
-		    else
+		    else{
 			allowed[i][j] = false;
-		    //	mc[i][j] = infinity;
+			mc[i][j] = infinity;
+		    }
 		}
 	    }
+
 	    LowerBoundTSP lbt = new LowerBoundTSP();
 	    lb += lbt.lowerBoundValue(mc);
 	    if(isLeaf()){
@@ -167,8 +112,7 @@ public class NodeTSP implements Node<List<Integer>> {
 		    reflb = lb;
 	    }
 	    else {
-		father.child2 = new NodeTSP(father, u, v, false);
-		//traitement
+		traitment();   
 	    }
 	}
     }
@@ -277,5 +221,67 @@ public class NodeTSP implements Node<List<Integer>> {
 		return null;*/
 
 	return null;
+    }
+
+
+    public void traitment(){
+	
+	/*traitement de la matrice courante en ligne*/
+	for(int i = 0; i < mc.length; i++){
+	    double minim = minTabLine(i);
+	    value += minim;
+	    for(int j = 0; j < mc.length; j++){
+		if( i!=j)
+		    mc[i][j] -= minim;
+	    }		
+	}
+	    
+	/*traitement de la matrice courante en colonne*/
+	for(int i = 0; i < mc.length; i++){
+	    double minim2 = minTabRow(i);
+	    value += minim2;
+	    for(int j = 0; j < mc.length; j++){
+		if( i!=j)
+		    mc[j][i] -= minim2;
+	    }
+	}
+
+	/*Traitement des regrets 1/2 */
+	for(int i = 0; i < mc.length; i++){
+	    double minim = minTabLine(i);
+	    for(int j = 0; j < mc.length; j++){
+		if(mc[i][j] == 0)
+		    reg[i][j] = minim;
+	    }
+	}
+
+	/*Traitement des regrets 2/2 */
+	for(int i = 0; i < mc.length; i++){
+	    double minim2 = minTabRow(i);
+	    for(int j = 0; j < mc.length; j++){
+		if(mc[j][i] == 0)
+		    reg[j][i] += minim2;
+	    }
+	}
+
+	/*Selection*/
+	int    maxi   = 0;
+	int    maxj   = 0;
+	double maxreg = 0.0;
+
+	for(int i=0; i< mc.length; i++){
+	    for(int j=0; j< mc.length; j++){
+		if(reg[i][j] > maxreg && isAllowed(i,j)) {
+		    maxreg = reg[i][j];
+		    maxi = i;
+		    maxj = j;
+		}
+	    }
+	}
+	    
+	/*fils*/
+	child1 = new NodeTSP(this, maxi, maxj, true);
+	child2 = new NodeTSP(this, maxi, maxj, false);
+
     }
 }
