@@ -34,8 +34,12 @@ public class NodeTSP implements Node<List<Integer>> {
 	/*TODO*/
 
 	mc = matrix;
+	Arc first = new Arc(mc[1][2], 1, 2);
+	arcs.add(first);
+	
 
-	//arcs = new List<Arc>();
+
+
 	//Node<List<Integer>> list = new Node<List<Integer>>();
 	//	child1 = null;
 	//child2 = null;
