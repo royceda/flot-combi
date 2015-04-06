@@ -45,82 +45,82 @@ public class NodeTSP implements Node<List<Integer>> {
 	
 	//if (isLeaf())
 	//  if(lb<reflb){
-		reflb = lb;
-		//value = lb;
-		//  }
+	reflb = lb;
+	//value = lb;
+	//  }
 
 	//else if (isFeasible()){//amelioration possible
-	    allowed  = new boolean[n][n];
-	    reg      = new double[n][n];
+	allowed  = new boolean[n][n];
+	reg      = new double[n][n];
 	    	    
-	    /*Some init*/
-	    for(int i = 0; i < mc.length; i++){
-		for(int j = 0; j < mc.length; j++){
-		    allowed[i][j] = true;
-		    reg[i][j] = 0;
-		}
+	/*Some init*/
+	for(int i = 0; i < mc.length; i++){
+	    for(int j = 0; j < mc.length; j++){
+		allowed[i][j] = true;
+		reg[i][j] = 0;
 	    }
+	}
 	    
-	    /*traitement de la matrice courante en ligne*/
-	    for(int i = 0; i < mc.length; i++){
-		double minim = minTabLine(i);
-		value += minim;
-		for(int j = 0; j < mc.length; j++){
-		    if( i!=j)
-			mc[i][j] -= minim;
-		 }		
-	    }
+	/*traitement de la matrice courante en ligne*/
+	for(int i = 0; i < mc.length; i++){
+	    double minim = minTabLine(i);
+	    value += minim;
+	    for(int j = 0; j < mc.length; j++){
+		if( i!=j)
+		    mc[i][j] -= minim;
+	    }		
+	}
 	    
-	    /*traitement de la matrice courante en colonne*/
-	    for(int i = 0; i < mc.length; i++){
-		double minim2 = minTabRow(i);
-		value += minim2;
-		for(int j = 0; j < mc.length; j++){
-		    if( i!=j)
-			mc[j][i] -= minim2;
-		}
+	/*traitement de la matrice courante en colonne*/
+	for(int i = 0; i < mc.length; i++){
+	    double minim2 = minTabRow(i);
+	    value += minim2;
+	    for(int j = 0; j < mc.length; j++){
+		if( i!=j)
+		    mc[j][i] -= minim2;
 	    }
+	}
 
-	    /*Traitement des regrets 1/2 */
-	    for(int i = 0; i < mc.length; i++){
-		double minim = minTabLine(i);
-		for(int j = 0; j < mc.length; j++){
-		    if(mc[i][j] == 0)
+	/*Traitement des regrets 1/2 */
+	for(int i = 0; i < mc.length; i++){
+	    double minim = minTabLine(i);
+	    for(int j = 0; j < mc.length; j++){
+		if(mc[i][j] == 0)
 		    reg[i][j] = minim;
+	    }
+	}
+
+	/*Traitement des regrets 2/2 */
+	for(int i = 0; i < mc.length; i++){
+	    double minim2 = minTabRow(i);
+	    for(int j = 0; j < mc.length; j++){
+		if(mc[j][i] == 0)
+		    reg[j][i] += minim2;
+	    }
+	}
+
+	/*Selection*/
+	int    maxi   = 0;
+	int    maxj   = 0;
+	double maxreg = 0.0;
+
+	for(int i=0; i< mc.length; i++){
+	    for(int j=0; j< mc.length; j++){
+		if(reg[i][j] > maxreg && isAllowed(i,j)) {
+		    maxreg = reg[i][j];
+		    maxi = i;
+		    maxj = j;
 		}
 	    }
-
-	    /*Traitement des regrets 2/2 */
-	    for(int i = 0; i < mc.length; i++){
-		double minim2 = minTabRow(i);
-		for(int j = 0; j < mc.length; j++){
-		    if(mc[j][i] == 0)
-			reg[j][i] += minim2;
-		}
-	    }
-
-	    /*Selection*/
-	    int    maxi   = 0;
-	    int    maxj   = 0;
-	    double maxreg = 0.0;
-
-	    for(int i=0; i< mc.length; i++){
-		for(int j=0; j< mc.length; j++){
-		    if(reg[i][j] > maxreg && isAllowed(i,j)) {
-			maxreg = reg[i][j];
-			maxi = i;
-			maxj = j;
-		    }
-		}
-	    }
+	}
 	    
-	    /*fils*/
-	    child1 = new NodeTSP(this, maxi, maxj, true);
-	    child2 = new NodeTSP(this, maxi, maxj, false);
-	    //	}
-	    //	else{
-	    //	    child  = null;
-	    //	}
+	/*fils*/
+	child1 = new NodeTSP(this, maxi, maxj, true);
+	child2 = new NodeTSP(this, maxi, maxj, false);
+	//	}
+	//	else{
+	//	    child  = null;
+	//	}
     }
 
     /** useful to create the children */
@@ -132,7 +132,7 @@ public class NodeTSP implements Node<List<Integer>> {
 	
 	if(!selected){
 	    lb = father.getLB() + father.reg[u][v];
-	    //	    mc[u][v] = infinity;
+	    mc[u][v] = infinity;
 	    allowed[u][v] = false;
 
 	    if(isLeaf()){
@@ -141,7 +141,7 @@ public class NodeTSP implements Node<List<Integer>> {
 	    }
 	    
 	    else if(isFeasible() && !isLeaf()) {
-		child1 = new NodeTSP(mc);
+		//	child1 = new NodeTSP(mc);
 	    }
 	    else{//fin
 		
@@ -157,7 +157,7 @@ public class NodeTSP implements Node<List<Integer>> {
 			mc[i][j] = father.mc[i][j];
 		    else
 			allowed[i][j] = false;
-			//	mc[i][j] = infinity;
+		    //	mc[i][j] = infinity;
 		}
 	    }
 	    LowerBoundTSP lbt = new LowerBoundTSP();
@@ -259,22 +259,22 @@ public class NodeTSP implements Node<List<Integer>> {
 
     public boolean hasNextChild() {
 	/*	if( child1 == null && child2 == null)
-	    return true;
-	else
-	return false;*/
+		return true;
+		else
+		return false;*/
 	return false;
     }
 
     public Node<List<Integer>> getNextChild() {
 	//Node<List<Integer>> child = null;
 	/*	if(hasNextChild()){
-	    if(child1 != null)
+		if(child1 != null)
 		return child1;
-	    else
+		else
 		return child2;
-	}
-	else
-	return null;*/
+		}
+		else
+		return null;*/
 
 	return null;
     }
