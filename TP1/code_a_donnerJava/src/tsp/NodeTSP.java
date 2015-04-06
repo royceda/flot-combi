@@ -14,7 +14,7 @@ public class NodeTSP implements Node<List<Integer>> {
     Node child2;
     double[][] mc;
 
-
+    double infinity = 100000000E08;
 
 
     /**
@@ -32,28 +32,56 @@ public class NodeTSP implements Node<List<Integer>> {
     /** to create the first node ==> root note */
     public NodeTSP(double[][] matrix) {
 	/*TODO*/
+	
+	System.out.println("   on construit un noeud Racine");
+
+	int n = matrix.length;
 
 	mc = matrix;
 	arcs = new ArrayList<>();
-	Arc first = new Arc(mc[1][2], 1, 2);
-	arcs.add(first);
+	interdit = new boolean[n][n];
 	
+	/*traitement de la mtrice*/
+	for(int i = 0; i < mc.length; ++i){
+	    for(int j = 0; j < mc.length; ++j)
+		if( i!=j)
+		    mc[i][j] -= minTab(i);
+	}
 
-
-	for( int i = 0; i < matrix.length; ++i)
-	    for( int j = 0; j < matrix.length; ++j)
-		if(i != j){
-		    child1 = new NodeTSP(this, i, j, true);
-		    child2 = new NodeTSP(this, i, j, false);
-		}
-	
+	for( int i = 0; i < mc.length; ++i)
+	    for( int j = 0; j < mc.length; ++j)
+		if(i != j){		    
+		    child1 = new NodeTSP(this, 1, 2, true);
+		    child2 = new NodeTSP(this, 1, 2, false);
+		    }	
     }
+
+
+
+
 
     /** useful to create the children */
     private NodeTSP(NodeTSP father, int u, int v, boolean selected) {
-	if (selected){
+	//System.out.println("on construit un noeud fils");
 
-	    int i;
+	arcs = father.arcs;
+	mc = father.mc;
+	if (selected){
+	    interdit = father.interdit;
+	    interdit[u][v] = true;
+	    Arc first = new Arc(mc[u][v], u, v);
+	    arcs.add(first);
+	    
+	    for( int i = 0; i < mc.length; ++i)
+		for( int j = 0; j < mc.length; ++j)
+		    if(i != j && !interdit[i][j]){
+			//modif mc
+			mc[i][v] = infinity;
+			mc[u][j] = infinity;
+			
+			child1 = new NodeTSP(this, i, j, true);
+			child2 = new NodeTSP(this, i, j, false);
+		    }
 	}
 	else {
 	    int j;
@@ -62,7 +90,7 @@ public class NodeTSP implements Node<List<Integer>> {
 
 	
 
-	//	return Node;
+
 	/*
 	  Node<List<Integer>> mylist = new List<Integer>;
 	  mylist.add(new NodeTSP(this, u+1, v, true));
