@@ -2,6 +2,7 @@ package tsp;
 
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 //import tsp.Arc;
 import branchAndBound.Node;
@@ -10,11 +11,17 @@ import tsp.Arc;
 public class NodeTSP implements Node<List<Integer>> {
     List<Arc> arcs;
     boolean[][] interdit; //matrice d'interdit
+    Node child;
     Node child1;
     Node child2;
     double[][] mc;
+    double[][] reg;
+    double lb;
 
-public static double infinity = 0;
+
+
+
+    public static double infinity = 0;
 
 
     /**
@@ -38,14 +45,22 @@ public static double infinity = 0;
 	int n = matrix.length;
 
 	mc = matrix;
+	double[][] tmp = matrix;
+	LowerBoundTSP lbt = new LowerBoundTSP();
+	lb = lbt.lowerBoundValue(tmp);
+
 	arcs = new ArrayList<>();
 	interdit = new boolean[n][n];
 	
-	for(int i = 0; i < mc.length; i++)
-	    for(int j = 0; j < mc.length; j++)
+	reg = new double[n][n];
+
+
+	for(int i = 0; i < mc.length; i++){
+	    for(int j = 0; j < mc.length; j++){
 		interdit[i][j] = false;
-
-
+		reg[i][j] = 0;
+	    }
+	}
 
 	/*traitement de la matrice*/
 	for(int i = 0; i < mc.length; i++){
@@ -53,6 +68,8 @@ public static double infinity = 0;
 	    for(int j = 0; j < mc.length; j++){
 		if( i!=j)
 		    mc[i][j] -= minim;
+		if(mc[i][j] == 0)
+		    reg[i][j] = minim;
 	    }
 	}
 
@@ -62,17 +79,26 @@ public static double infinity = 0;
 	    for(int j = 0; j < mc.length; j++){
 		if( i!=j)
 		    mc[j][i] -= minim2;
+		if(mc[j][i] == 0)
+		    reg[j][i] += minim2;
 	    }
 	}
 
+	int maxi = 0;
+	int maxj = 0;
+	double maxreg = 0.0;
+	for(int i=0; i< mc.length; i++){
+	    for(int j=0; j< mc.length; j++){
+		if(reg[i][j] > maxreg) {
+		    maxreg = reg[i][j];
+		    maxi = i;
+		    maxj = j;
+		}
+	    }
+	}
 
-
-	for( int i = 0; i < mc.length; i++)
-	    for( int j = 0; j < mc.length; j++)
-		if(i != j && mc[i][j] == 0){		    
-		    child1 = new NodeTSP(this, i, j, true);
-		    child2 = new NodeTSP(this, i, j, false);
-		    }	
+	child1 = new NodeTSP(this, maxi, maxj, true);
+	child2 = new NodeTSP(this, maxi, maxj, false);
     }
 
 
@@ -82,8 +108,28 @@ public static double infinity = 0;
     /** useful to create the children */
     private NodeTSP(NodeTSP father, int u, int v, boolean selected) {
 	//System.out.println("on construit un noeud fils");
+	interdit = father.interdit;
+	mc = father.mc;
+
+	if(!selected){
+	    lb = father.getLB() + father.reg[u][v];
+	}
+	else{
+	    lb = father.getLB();
+	    for(int i= 0; i< mc.length; i++){
+		for(int j=0; j< mc.length; j++){
+		    if(i!= u && j!= v)
+			mc[i][j] = father.mc[i][j];
+		    else
+			mc[i][j] = infinity;
+		}
+	    }
+	    Node child = new NodeTSP(mc);
+	    
+	}
 	
-	arcs = father.arcs;
+	
+	/*	arcs = father.arcs;
 	mc = father.mc;
 	if (selected){
 	    interdit = father.interdit;
@@ -176,8 +222,7 @@ public static double infinity = 0;
      *
      */
     public double getLB() {
-	LowerBoundTSP lb = new LowerBoundTSP();
-	return lb.lowerBoundValue(mc);
+	return lb;
     }
     
 	
