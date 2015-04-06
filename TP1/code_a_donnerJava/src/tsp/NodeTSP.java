@@ -34,18 +34,19 @@ public class NodeTSP implements Node<List<Integer>> {
 	/*TODO*/
 
 	mc = matrix;
+	arcs = new ArrayList<>();
 	Arc first = new Arc(mc[1][2], 1, 2);
 	arcs.add(first);
 	
 
+	//example
+	child1 = new NodeTSP(this, 1, 2, true);
+	child2 = new NodeTSP(this, 1, 2, false);
 
 
-	//Node<List<Integer>> list = new Node<List<Integer>>();
-	//	child1 = null;
-	//child2 = null;
+
+
 	/*traitement de la matrice*/
-
-
 
 	/*
 	int n = matrix[0].size();
@@ -62,8 +63,9 @@ public class NodeTSP implements Node<List<Integer>> {
 
     /** useful to create the children */
     private NodeTSP(NodeTSP father, int u, int v, boolean selected) {
-	//	NodeTSP node = new NodeTSP();
+
 	
+       
 
 	
 
